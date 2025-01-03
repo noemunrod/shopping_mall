@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Odoo module for Shopping shopping activities"""
+from datetime import datetime
 from odoo import api, fields, models  # type: ignore
+from odoo.exceptions import ValidationError  # type: ignore
 
 
 class Price(models.Model):
@@ -24,13 +26,12 @@ class Stock(models.Model):
     lots_ids = fields.One2many(
         'shopping_mall.lot', 'stock_id', string='lots')
     sum_of_lots = fields.Integer(
-        'Total Stock', compute='_compute_sum_of_lots,store=True')
+        'Total Stock', compute='_compute_sum_of_lots', store=True)
 
-
-@api.depends('lots_ids')
-def _compute_sum_of_lots(self):
-    for record in self:
-        record.sum_of_lots = sum(lot.amount for lot in record.lots_ids)
+    @api.depends('lots_ids')
+    def _compute_sum_of_lots(self):
+        for record in self:
+            record.sum_of_lots = sum(lot.amount for lot in record.lots_ids)
 
 
 class Lot(models.Model):
@@ -97,9 +98,57 @@ class Customer(models.Model):
     external_uid = fields.Char('External UID')
     name = fields.Char('Name')
     surname = fields.Char('Surname')
+    birth_date = fields.Date('Date of Birth')
     email = fields.Char('Email')
     dir_line_1 = fields.Char('Address Line 1')
     dir_line_2 = fields.Char('Address Line 2')
     post_code = fields.Char('Postal Code')
+    country_id = fields.Many2one('res.country', string='Country')
+    tutor_external_uid = fields.Char('tutor_external_uid')
+    credit_line_import = fields.Integer('credit_line_import')
+    money_spent = fields.Float('money_spent')
     carts_ids = fields.One2many(
         'shopping_mall.cart', 'customer_id', string='Carts')
+    is_adult = fields.Boolean(
+        'Is Adult', compute='_compute_is_adult, store = True')
+
+    def obtain_country(self):
+        """Verifies if exists associated country for a costumer"""
+        for customer in self:
+            if customer.country_id:
+                return customer.country_id.name
+            else:
+                return 'No country associated'
+
+    @api.depends('birth_date')
+    def _compute_is_adult(self):
+        """Verifies if the customer is adult (fixed in 18 years or more)"""
+        for customer in self:
+            if customer.birth_date:
+                today = datetime.today()
+                birth_date = datetime.strptime(customer.birth_date, "%Y-%m-%d")
+                age = self.calculate_age(birth_date, today)
+                if age >= 18:
+                    return True
+                else:
+                    return False
+            else:
+                return False
+
+    @staticmethod
+    def calculate_age(birth_date, today_date):
+        """Based in a birthdate and actual date calculates age"""
+        age = today_date.year - birth_date.year
+        if (today_date.month, today_date.day) < (birth_date.month, birth_date.day):
+            age -= 1
+        return age
+
+    @api.constrains('age', 'tutor_external_uid')
+    def _check_tutor_external_uid(self):
+        """Checks if if a tutors external UID is provided for a minor customer"""
+        for customer in self:
+            if not customer.is_adult and not customer.tutor_external_uid:
+                raise ValidationError(
+                    f"Customer {customer.name} {customer.surname} is a minor."
+                    f"You must provide the NIF of their tutor"
+                )
