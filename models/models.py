@@ -49,6 +49,7 @@ class Cart(models.Model):
     """Cart entity with each cartProduct and payment relevance information"""
     _name = 'cart'
     _description = 'cart'
+    id = fields.Integer('id')
     amount = fields.Float('amount')
     discounts = fields.Float('discounts')
     total_amount = fields.Float('total_amount')
