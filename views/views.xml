@@ -8,9 +8,9 @@
       <field name="model">school.school_class</field>
       <field name="arch" type="xml">
         <tree>
-          <field name="name"/>
-          <field name="grade"/>
-          <field name="tutor_id"/>
+          <field name="name" />
+          <field name="grade" />
+          <field name="tutor_id" />
         </tree>
       </field>
     </record>
@@ -23,9 +23,9 @@
         <form>
           <sheet>
             <div class="oe_title">
-                <h1>
-                    <field name="name" placeholder="Class denomination" required="True"/>
-                </h1>
+              <h1>
+                <field name="name" placeholder="Class denomination" required="True" />
+              </h1>
             </div>
             <group>
               <group>
@@ -39,10 +39,10 @@
               </group>
             </group>
             <group>
-              <field name="student_ids"/>
+              <field name="student_ids" />
             </group>
             <group>
-              <field name="description"/>
+              <field name="description" />
             </group>
           </sheet>
         </form>
@@ -63,9 +63,9 @@
       <field name="model">school.student</field>
       <field name="arch" type="xml">
         <tree>
-          <field name="name"/>
-          <field name="last_name"/>
-          <field name="class_id"/>
+          <field name="name" />
+          <field name="last_name" />
+          <field name="class_id" />
         </tree>
       </field>
     </record>
@@ -77,8 +77,9 @@
       <field name="arch" type="xml">
         <form>
           <sheet>
-            <field name="active" invisible="1"/>
-            <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+            <field name="active" invisible="1" />
+            <widget name="web_ribbon" title="Archived" bg_color="bg-danger"
+              attrs="{'invisible': [('active', '=', True)]}" />
             <group>
               <group>
                 <field name="name" />
@@ -92,7 +93,7 @@
               </group>
             </group>
             <group>
-              <field name="event_ids"/>
+              <field name="event_ids" />
             </group>
           </sheet>
         </form>
@@ -112,10 +113,11 @@
       <field name="name">Event list</field>
       <field name="model">school.event</field>
       <field name="arch" type="xml">
-        <tree decoration-danger="type=='behavior'" decoration-success="type=='felicitation'" decoration-bf="type=='absence'">
-          <field name="class_id"/>
-          <field name="datetime_begin"/>
-          <field name="type"/>
+        <tree decoration-danger="type=='behavior'" decoration-success="type=='felicitation'"
+          decoration-bf="type=='absence'">
+          <field name="class_id" />
+          <field name="datetime_begin" />
+          <field name="type" />
         </tree>
       </field>
     </record>
@@ -138,10 +140,10 @@
               </group>
             </group>
             <group>
-              <field name="description"/>
+              <field name="description" />
             </group>
             <group>
-              <field name="student_ids"/>
+              <field name="student_ids" />
             </group>
           </sheet>
         </form>
@@ -149,32 +151,32 @@
     </record>
 
     <!-- Search view -->
-    <record id="school.event_search_view"  model="ir.ui.view">
+    <record id="school.event_search_view" model="ir.ui.view">
       <field name="model">school.event</field>
       <field name="arch" type="xml">
         <search>
-            <field name="datetime_begin"/>
-            <field name="class_id"/>
-            <field name="type" widget="selection"/>
-            <group string="Group By">
-            <filter name="group_by_class" string="Class" context="{'group_by': 'class_id'}"/>
-            <filter name="group_by_type" string="Type" context="{'group_by': 'type'}"/>
-            </group>
+          <field name="datetime_begin" />
+          <field name="class_id" />
+          <field name="type" widget="selection" />
+          <group string="Group By">
+            <filter name="group_by_class" string="Class" context="{'group_by': 'class_id'}" />
+            <filter name="group_by_type" string="Type" context="{'group_by': 'type'}" />
+          </group>
         </search>
       </field>
     </record>
 
     <!-- calendar view -->
     <record model="ir.ui.view" id="school.event_calendar">
-        <field name="name">Event Calendar</field>
-        <field name="model">school.event</field>
-        <field name="arch" type="xml">
-            <calendar string="Event Calendar" date_start="datetime_begin" color="type" mode="week">
-                <field name="class_id"/>
-                <field name="type"/>
-                <field name="description"/>
-            </calendar>
-        </field>
+      <field name="name">Event Calendar</field>
+      <field name="model">school.event</field>
+      <field name="arch" type="xml">
+        <calendar string="Event Calendar" date_start="datetime_begin" color="type" mode="week">
+          <field name="class_id" />
+          <field name="type" />
+          <field name="description" />
+        </calendar>
+      </field>
     </record>
 
 
@@ -183,26 +185,28 @@
       <field name="name">Event window</field>
       <field name="res_model">school.event</field>
       <field name="view_mode">tree,form,calendar</field>
-      <field name="context">{'search_default_group_by_class': True, 'search_default_group_by_type': True}</field>
+      <field name="context">{'search_default_group_by_class': True, 'search_default_group_by_type':
+        True}</field>
 
     </record>
-    
-    
+
+
     <!-- Top menu item -->
 
-    <menuitem name="School" id="school.menu_root" web_icon="school,static/description/icon.png"/>
+    <menuitem name="School" id="school.menu_root" web_icon="school,static/description/icon.png" />
 
     <!-- menu categories -->
 
-    <menuitem name="Events" id="school.menu_events" parent="school.menu_root" action="school.event_action_window"/>
-    <menuitem name="Config" id="school.menu_config" parent="school.menu_root"/>
+    <menuitem name="Events" id="school.menu_events" parent="school.menu_root"
+      action="school.event_action_window" />
+    <menuitem name="Config" id="school.menu_config" parent="school.menu_root" />
 
     <!-- actions -->
 
     <menuitem name="Classes" id="school.menu_config_classes" parent="school.menu_config"
-              action="school.school_class_action_window"/>
+      action="school.school_class_action_window" />
     <menuitem name="Students" id="school.menu_config_students" parent="school.menu_config"
-              action="school.student_action_window"/>
+      action="school.student_action_window" />
 
   </data>
 </odoo>
