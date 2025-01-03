@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_school_school_class_manager,school.school_class.manager,model_school_school_class,group_school_manager,1,1,1,1
+access_school_school_class_teacher,school.school_class.teacher,model_school_school_class,group_school_teacher,1,0,0,0
+access_school_student_manager,school.student.manager,model_school_student,group_school_manager,1,1,1,1
+access_school_student_teacher,school.student.teacher,model_school_student,group_school_teacher,1,0,0,0
+access_school_event_manager,school.event.manager,model_school_event,group_school_manager,1,1,1,1
+access_school_event_teacher,school.event.teacher,model_school_event,group_school_teacher,1,1,0,0
+access_hr_employee_teacher,hr.employee.teacher,hr.model_hr_employee,group_school_teacher,1,0,0,0
+access_hr_employee_category_teacher,hr.employee.category.teacher,hr.model_hr_employee_category,group_school_teacher,1,0,0,0
