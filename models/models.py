@@ -16,6 +16,52 @@ class Price(models.Model):
     active = fields.Boolean('Active', default=True)
     product_id = fields.Many2one('shopping_mall.product', string='Product')
 
+    @api.model
+    def deactivate_expired_prices(self):
+        """Deactivate the prices that have passed their expiration date"""
+        current_date = fields.Datetime.now()
+        expired_prices = self.search([
+            ('date_ends', '<', current_date),
+            ('active', '=', True)
+        ])
+
+        for price in expired_prices:
+            price.active = False
+
+    @api.model
+    def activate_current_prices(self):
+        """Activate the prices for the current date"""
+        current_date = fields.Datetime.now()
+        current_prices = self.search([
+            ('date_starts', '>=', current_date),
+            ('active', '=', False)
+        ])
+        for price in current_prices:
+            price.active = True
+
+    @api.constrains('active', 'product_id')
+    def _check_unique_active_price(self):
+        """Checks if it is more than a price active preventing errors"""
+        for record in self:
+            if record.active:
+                existing_active_price = self.search([
+                    ('active', '=', True),
+                    ('product_id', '=', record.product_id.id),
+                    ('id', '!=', record.id)
+                ])
+                if existing_active_price:
+                    raise ValidationError(
+                        f"There is already an active price for '{record.product_id.name}'"
+                    )
+
+    @api.constrains('date_ends', 'date_starts', 'product_id')
+    def _validate_dates_insert(self):
+        for record in self:
+            if record.date_ends < record.date_starts:
+                raise ValidationError(
+                    "Ending Date cannot be before Beginning Date. Please use correct time intervals"
+                )
+
 
 class Stock(models.Model):
     """Stock entity with the sum of all lots of its referenced product"""
@@ -62,6 +108,16 @@ class Product(models.Model):
         'shopping_mall.lot', 'product_id', string='Lot')
     cart_products_ids = fields.One2many(
         'shopping_mall.cart_product', 'product_id', string='Cart Product')
+
+    @api.constrains('name')
+    def _check_unique_name(self):
+        for record in self:
+            existing_products = self.search(
+                [('name', '=', record.name), ('id', "!=", record.id)])
+            if existing_products:
+                raise ValidationError(
+                    f"The name '{record.name}' is already in use. Please choose another name."
+                )
 
 
 class CartProducts(models.Model):
@@ -120,7 +176,7 @@ class Customer(models.Model):
             else:
                 return 'No country associated'
 
-    @api.depends('birth_date')
+    @ api.depends('birth_date')
     def _compute_is_adult(self):
         """Verifies if the customer is adult (fixed in 18 years or more)"""
         for customer in self:
@@ -135,7 +191,7 @@ class Customer(models.Model):
             else:
                 return False
 
-    @staticmethod
+    @ staticmethod
     def calculate_age(birth_date, today_date):
         """Based in a birthdate and actual date calculates age"""
         age = today_date.year - birth_date.year
@@ -143,7 +199,7 @@ class Customer(models.Model):
             age -= 1
         return age
 
-    @api.constrains('age', 'tutor_external_uid')
+    @ api.constrains('age', 'tutor_external_uid')
     def _check_tutor_external_uid(self):
         """Checks if if a tutors external UID is provided for a minor customer"""
         for customer in self:
