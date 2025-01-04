@@ -11,6 +11,13 @@
           <group>
             <field name="name" />
             <field name="surname" />
+            <field name="birth_date" />
+            <field name="email" />
+            <field name="dir_line_1" />
+            <field name="dir_line_2" />
+            <field name="post_code" />
+            <field name="country_id" />
+            <field name="guardian_external_uid" />
           </group>
         </sheet>
       </form>
@@ -26,6 +33,17 @@
       <tree string="Customer">
         <field name="name" />
         <field name="surname" />
+        <field name="birth_date" />
+        <field name="email" />
+        <field name="dir_line_1" />
+        <field name="dir_line_2" />
+        <field name="post_code" />
+        <field name="country_id" />
+        <field name="guardian_external_uid" />
+        <field name="credit_limit_amount" />
+        <field name="money_spent" />
+        <field name="carts_ids" />
+        <field name="is_adult" />
       </tree>
     </field>
   </record>

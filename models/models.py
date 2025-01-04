@@ -117,12 +117,12 @@ class Lot(models.Model):
     _name = 'shopping_mall.lot'
     _description = 'Lot individual stock for caducity verification'
 
-    number = fields.Integer('number')
-    stock_id = fields.Many2one('shopping_mall.stock', string='stock')
+    number = fields.Integer('Number')
+    stock_id = fields.Many2one('shopping_mall.stock', string='Stock')
     product_id = fields.Many2one('shopping_mall.product', string='Product')
     lot_number = fields.Char('Lot Number')
     expiration = fields.Date('Expiration Date')
-    amount = fields.Integer('amount')
+    amount = fields.Integer('Amount')
 
 
 class Product(models.Model):
@@ -192,9 +192,9 @@ class Customer(models.Model):
     dir_line_2 = fields.Char('Address Line 2')
     post_code = fields.Char('Postal Code')
     country_id = fields.Many2one('res.country', string='Country')
-    guardian_external_uid = fields.Char('guardian_external_uid')
-    credit_limit_amount = fields.Integer('credit_limit_amount')
-    money_spent = fields.Float('money_spent')
+    guardian_external_uid = fields.Char('Guardian External UID')
+    credit_limit_amount = fields.Integer('Credit limit amount')
+    money_spent = fields.Float('Money Spent')
     carts_ids = fields.One2many(
         'shopping_mall.cart', 'customer_id', string='Carts')
     is_adult = fields.Boolean(
@@ -222,9 +222,9 @@ class Customer(models.Model):
     @staticmethod
     def calculate_age(birth_date, today_date):
         """Calculates age based on a birthdate and the current date"""
-        age = today_date.year - birth_date.year
         if not birth_date:
             return 0
+        age = today_date.year - birth_date.year
         if (today_date.month, today_date.day) < (birth_date.month, birth_date.day):
             age -= 1
         return age
