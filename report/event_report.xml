@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <report
+        id="event_report"
+        model="shopping_mall.event"
+        string="Event Report"
+        report_type="qweb-pdf"
+        name="shopping_mall.report_event"
+        file="shopping_mall.report_event"
+        attachment_use="False"
+    />
+    <template id="report_event">
+        <t t-foreach="docs" t-as="doc">
+            <div class="page">
+                <h2>Event Report for <t t-esc="doc.name" /></h2>
+                <p>Event Date: <t t-esc="doc.event_date" /></p>
+                <p>Location: <t t-esc="doc.location" /></p>
+                <table>
+                    <tr>
+                        <th>Attendee Name</th>
+                        <th>Ticket Type</th>
+                    </tr>
+                    <t t-foreach="doc.attendees" t-as="attendee">
+                        <tr>
+                            <td>
+                                <t t-esc="attendee.name" />
+                            </td>
+                            <td>
+                                <t t-esc="attendee.ticket_type" />
+                            </td>
+                        </tr>
+                    </t>
+                </table>
+            </div>
+        </t>
+    </template>
+</odoo>

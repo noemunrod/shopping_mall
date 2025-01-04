@@ -5,6 +5,46 @@ from odoo import api, fields, models  # type: ignore
 from odoo.exceptions import ValidationError  # type: ignore
 
 
+class ShoppingMall(models.Model):
+    """Basic model for testing views"""
+    _name = 'shopping_mall'
+    _description = 'Shopping Mall'
+
+    name = fields.Char('name')
+    description = fields.Char('description')
+
+
+class IrCron(models.Model):
+    """Management of different cron tasks"""
+    _inherit = 'ir.cron'
+
+    @api.model
+    def create_deactivate_expired_prices(self):
+        """Creates the cron task for deactivating the expired prices"""
+        self.create({
+            'name': 'Deactivate Expired Prices',
+            'model_id': self.env.ref('shopping_mall.model_shopping_mall_price').id,
+            'state': 'code',
+            'code': 'model.deactivate_expired_prices()',
+            'interval_type': 'minutes',
+            'interval_number': 60,
+            "active": True,
+        })
+
+    @api.model
+    def create_activate_current_prices(self):
+        """Creates the cron task for activating the current prices"""
+        self.create({
+            'name': 'Activate Current Prices',
+            'model_id': self.env.ref('shopping_mall.model_shopping_mall_price').id,
+            'state': 'code',
+            'code': 'model.activate_current_prices()',
+            'interval_type': 'minutes',
+            'interval_number': 60,
+            "active": True,
+        })
+
+
 class Price(models.Model):
     """Price entity with status and timestamps of activation"""
     _name = 'shopping_mall.price'
@@ -41,7 +81,7 @@ class Price(models.Model):
 
     @api.constrains('active', 'product_id')
     def _check_unique_active_price(self):
-        """Checks if it is more than a price active preventing errors"""
+        """Checks if there is more than one active price preventing errors"""
         for record in self:
             if record.active:
                 existing_active_price = self.search([
@@ -56,6 +96,7 @@ class Price(models.Model):
 
     @api.constrains('date_ends', 'date_starts', 'product_id')
     def _validate_dates_insert(self):
+        """Checks if end date is before start date"""
         for record in self:
             if record.date_ends < record.date_starts:
                 raise ValidationError(
@@ -143,7 +184,7 @@ class Cart(models.Model):
     total_amount = fields.Float('Total Amount')
     taxes = fields.Float('Taxes')
     creation_timestamp = fields.Datetime(
-        'Creation Timestamp', default=fields.Datetime.now)
+        'Creation Timestamp', default=fields.Datetime.now())
 
 
 class Customer(models.Model):
@@ -166,42 +207,40 @@ class Customer(models.Model):
     carts_ids = fields.One2many(
         'shopping_mall.cart', 'customer_id', string='Carts')
     is_adult = fields.Boolean(
-        'Is Adult', compute='_compute_is_adult, store = True')
+        'Is Adult', compute='_compute_is_adult', store=True)
 
     def obtain_country(self):
-        """Verifies if exists associated country for a costumer"""
+        """Verifies if there is an associated country for a customer"""
         for customer in self:
             if customer.country_id:
                 return customer.country_id.name
             else:
                 return 'No country associated'
 
-    @ api.depends('birth_date')
+    @api.depends('birth_date')
     def _compute_is_adult(self):
-        """Verifies if the customer is adult (fixed in 18 years or more)"""
+        """Verifies if the customer is an adult (18 years or more)"""
         for customer in self:
-            if customer.birth_date:
-                today = datetime.today()
-                birth_date = datetime.strptime(customer.birth_date, "%Y-%m-%d")
-                age = self.calculate_age(birth_date, today)
-                if age >= 18:
-                    return True
-                else:
-                    return False
+            today = datetime.today()
+            age = self.calculate_age(customer.birth_date, today)
+            if age >= 18:
+                customer.is_adult = True
             else:
-                return False
+                customer.is_adult = False
 
-    @ staticmethod
+    @staticmethod
     def calculate_age(birth_date, today_date):
-        """Based in a birthdate and actual date calculates age"""
+        """Calculates age based on a birthdate and the current date"""
         age = today_date.year - birth_date.year
+        if not birth_date:
+            return 0
         if (today_date.month, today_date.day) < (birth_date.month, birth_date.day):
             age -= 1
         return age
 
-    @ api.constrains('age', 'tutor_external_uid')
+    @api.constrains('is_adult', 'tutor_external_uid')
     def _check_tutor_external_uid(self):
-        """Checks if if a tutors external UID is provided for a minor customer"""
+        """Checks if a tutor's external UID is provided for a minor customer"""
         for customer in self:
             if not customer.is_adult and not customer.tutor_external_uid:
                 raise ValidationError(
