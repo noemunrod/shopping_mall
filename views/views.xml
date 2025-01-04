@@ -1,23 +1,47 @@
 <?xml version="1.0"?>
 <odoo>
-  <record id="view_shopping_mall_form" model="ir.ui.view">
-    <field name="name">shopping.mall.form</field>
-    <field name="model">shopping_mall</field>
+
+  <!-- Customer Form view -->
+  <record id="view_customer_form" model="ir.ui.view">
+    <field name="name">customer.form</field>
+    <field name="model">shopping_mall.customer</field>
     <field name="arch" type="xml">
-      <form string="Shopping Mall">
-        <field name="name" />
-        <field name="description" />
+      <form string="Customer">
+        <sheet>
+          <group>
+            <field name="name" />
+            <field name="surname" />
+          </group>
+        </sheet>
       </form>
     </field>
   </record>
 
-  <record id="action_shopping_mall" model="ir.actions.act_window">
-    <field name="name">Shopping Malls</field>
-    <field name="res_model">shopping_mall</field>
+  <!-- Customer Tree View -->
+  <record
+    id="view_customer_tree" model="ir.ui.view">
+    <field name="name">customer.tree</field>
+    <field name="model">shopping_mall.customer</field>
+    <field name="arch" type="xml">
+      <tree string="Customer">
+        <field name="name" />
+        <field name="surname" />
+      </tree>
+    </field>
+  </record>
+
+  <!-- Customer Form Action -->
+  <record id="customer_action"
+    model="ir.actions.act_window">
+    <field name="name">Customers</field>
+    <field name="res_model">shopping_mall.customer</field>
     <field name="view_mode">tree,form</field>
   </record>
 
-  <menuitem id="shopping_mall_menu" name="Shopping Mall" sequence="10" />
-  <menuitem id="shopping_mall_menu_item" name="Shopping Malls" parent="shopping_mall_menu"
-    action="action_shopping_mall" />
+  <!-- MainMenu -->
+  <menuitem id="shopping_mall_menu"
+    name="Shopping Mall" sequence="10" />
+
+  <!-- Customer Menu -->
+  <menuitem id="customer_menu" name="Customers" parent="shopping_mall_menu" action="customer_action" />
 </odoo>

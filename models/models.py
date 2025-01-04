@@ -5,15 +5,6 @@ from odoo import api, fields, models  # type: ignore
 from odoo.exceptions import ValidationError  # type: ignore
 
 
-class ShoppingMall(models.Model):
-    """Basic model for testing views"""
-    _name = 'shopping_mall'
-    _description = 'Shopping Mall'
-
-    name = fields.Char('name')
-    description = fields.Char('description')
-
-
 class IrCron(models.Model):
     """Management of different cron tasks"""
     _inherit = 'ir.cron'
@@ -201,8 +192,8 @@ class Customer(models.Model):
     dir_line_2 = fields.Char('Address Line 2')
     post_code = fields.Char('Postal Code')
     country_id = fields.Many2one('res.country', string='Country')
-    tutor_external_uid = fields.Char('tutor_external_uid')
-    credit_line_import = fields.Integer('credit_line_import')
+    guardian_external_uid = fields.Char('guardian_external_uid')
+    credit_limit_amount = fields.Integer('credit_limit_amount')
     money_spent = fields.Float('money_spent')
     carts_ids = fields.One2many(
         'shopping_mall.cart', 'customer_id', string='Carts')
@@ -238,12 +229,12 @@ class Customer(models.Model):
             age -= 1
         return age
 
-    @api.constrains('is_adult', 'tutor_external_uid')
-    def _check_tutor_external_uid(self):
-        """Checks if a tutor's external UID is provided for a minor customer"""
+    @api.constrains('is_adult', 'guardian_external_uid')
+    def _check_guardian_external_uid(self):
+        """Checks if a guardian's external UID is provided for a minor customer"""
         for customer in self:
-            if not customer.is_adult and not customer.tutor_external_uid:
+            if not customer.is_adult and not customer.guardian_external_uid:
                 raise ValidationError(
                     f"Customer {customer.name} {customer.surname} is a minor."
-                    f"You must provide the NIF of their tutor"
+                    f"You must provide the NIF of their guardian"
                 )
