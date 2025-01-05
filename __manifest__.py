@@ -26,6 +26,7 @@
         'views/product_view.xml',
         'views/costumer_view.xml',
         'views/price_view.xml',
+        'views/stock_view.xml',
         'security/ir.model.access.csv',
 
     ],

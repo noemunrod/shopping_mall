@@ -101,9 +101,10 @@ class Stock(models.Model):
     _name = 'shopping_mall.stock'
     _description = 'Stock amount of sum of all lots belonging to referenced product'
 
-    product_id = fields.Many2one('shopping_mall.product', string='Product')
+    product_id = fields.Many2one(
+        'shopping_mall.product', string='Product', required=True)
     lots_ids = fields.One2many(
-        'shopping_mall.lot', 'stock_id', string='lots')
+        'shopping_mall.lot', 'stock_id', string='Lots')
     sum_of_lots = fields.Integer(
         'Total Stock', compute='_compute_sum_of_lots', store=True)
 
@@ -118,12 +119,12 @@ class Lot(models.Model):
     _name = 'shopping_mall.lot'
     _description = 'Lot individual stock for caducity verification'
 
-    number = fields.Integer('Number')
     stock_id = fields.Many2one('shopping_mall.stock', string='Stock')
-    product_id = fields.Many2one('shopping_mall.product', string='Product')
     lot_number = fields.Char('Lot Number')
-    expiration = fields.Date('Expiration Date')
     amount = fields.Integer('Amount')
+    expiration = fields.Date('Expiration Date')
+    product_id = fields.Many2one(
+        'shopping_mall.product', string='Product', related='stock_id.product_id', store=True)
 
 
 class Product(models.Model):
@@ -136,7 +137,7 @@ class Product(models.Model):
     stock_id = fields.Many2one(
         'shopping_mall.stock', string='Stock')
     stock_amount = fields.Integer(
-        string="Total Stock", related='stock_id.sum_of_lots', store=True)
+        string="Total Stock", compute="_compute_stock_amount", store=True)
     lot_ids = fields.One2many(
         'shopping_mall.lot', 'product_id', string='Lot')
     price_ids = fields.One2many(
@@ -155,6 +156,12 @@ class Product(models.Model):
                 raise ValidationError(
                     f"The name '{record.name}' is already in use. Please choose another name."
                 )
+
+    @api.depends('stock_id.sum_of_lots')
+    def _compute_stock_amount(self):
+        for product in self:
+            total_amount = product.stock_id.sum_of_lots
+            product.stock_amount = total_amount
 
     @api.depends('price_ids.active', 'price_ids.price')
     def _compute_active_price(self):
