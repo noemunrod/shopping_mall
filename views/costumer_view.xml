@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+
+    <!-- Customer Form view -->
+    <record id="view_customer_form" model="ir.ui.view">
+        <field name="name">customer.form</field>
+        <field name="model">shopping_mall.customer</field>
+        <field name="arch" type="xml">
+            <form string="Customer">
+                <sheet>
+                    <group>
+                        <field name="name" />
+                        <field name="surname" />
+                        <field name="birth_date" />
+                        <field name="email" />
+                        <field name="dir_line_1" />
+                        <field name="dir_line_2" />
+                        <field name="post_code" />
+                        <field name="country_id" />
+                        <field name="guardian_external_uid" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Customer Tree View -->
+    <record
+        id="view_customer_tree" model="ir.ui.view">
+        <field name="name">customer.tree</field>
+        <field name="model">shopping_mall.customer</field>
+        <field name="arch" type="xml">
+            <tree string="Customer">
+                <field name="name" />
+                <field name="surname" />
+                <field name="birth_date" />
+                <field name="email" />
+                <field name="dir_line_1" />
+                <field name="dir_line_2" />
+                <field name="post_code" />
+                <field name="country_id" />
+                <field name="guardian_external_uid" />
+                <field name="credit_limit_amount" />
+                <field name="money_spent" />
+                <field name="carts_ids" />
+                <field name="is_adult" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Customer Form Action -->
+    <record id="customer_action"
+        model="ir.actions.act_window">
+        <field name="name">Customers</field>
+        <field name="res_model">shopping_mall.customer</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Register here your costumers.
+            </p>
+        </field>
+    </record>
+
+    <!-- Customer Menu -->
+    <menuitem
+        id="customer_menu"
+        name="Customers"
+        parent="shopping_mall_menu"
+        action="customer_action" />
+
+</odoo>

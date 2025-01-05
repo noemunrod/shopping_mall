@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+
+    <!-- Product Form View -->
+    <record id="product_view_form" model="ir.ui.view">
+        <field name="name">product.view.form</field>
+        <field name="model">shopping_mall.product</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <sheet>
+                    <group>
+                        <field name="name" />
+                        <field name="description" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Product Tree View -->
+    <record id="product_view_tree" model="ir.ui.view">
+        <field name="name">product.tree</field>
+        <field name="model">shopping_mall.product</field>
+        <field name="arch" type="xml">
+            <tree string="Products" default_order="price_ids asc">
+                <field name="name" />
+                <field name="description" />
+                <field name="price_ids" />
+                <field name="stock_id" />
+                <field name="lot_ids" />
+                <field name="cart_products_ids" />
+
+            </tree>
+        </field>
+    </record>
+
+    <!-- Product Form Action -->
+    <record id="product_action" model="ir.actions.act_window">
+        <field name="name">Products</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">shopping_mall.product</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Register here your products. Customers can buy added products in their carts.
+            </p>
+        </field>
+    </record>
+
+    <!-- Product Menu -->
+    <menuitem
+        id="product_menu"
+        name="Products"
+        parent="shopping_mall_menu"
+        action="product_action" />
+</odoo>
