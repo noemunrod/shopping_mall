@@ -178,6 +178,8 @@ class CartProducts(models.Model):
     cart_id = fields.Many2one('shopping_mall.cart', string='Cart')
     product_id = fields.Many2one('shopping_mall.product', string='Product')
     quantity = fields.Integer('quantity')
+    base_price = fields.Float('Unitary Price')
+    amount = fields.Float('Amount')
 
 
 class Cart(models.Model):
@@ -186,14 +188,14 @@ class Cart(models.Model):
     _description = 'Shopping Cart'
 
     customer_id = fields.Many2one('shopping_mall.customer', string='Customer')
-    cart_product_ids = fields.One2many(
-        'shopping_mall.cart_product', 'cart_id', string='Products')
+    cart_products_ids = fields.One2many(
+        'shopping_mall.cart_product', 'cart_id', string='Cart Products')
     amount = fields.Float('Amount')
     discounts = fields.Float('Discounts')
     total_amount = fields.Float('Total Amount')
     taxes = fields.Float('Taxes')
     creation_timestamp = fields.Datetime(
-        'Creation Timestamp', default=fields.Datetime.now())
+        'Creation Timestamp', default=lambda self: fields.Datetime.now())
 
 
 class Customer(models.Model):
