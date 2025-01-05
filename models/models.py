@@ -41,7 +41,7 @@ class Price(models.Model):
     _name = 'shopping_mall.price'
     _description = 'Collection of prices, activated and not'
 
-    price = fields.Float('price')
+    price = fields.Float('Price')
     date_starts = fields.Datetime('Start Date')
     date_ends = fields.Datetime('End Date')
     active = fields.Boolean('Active', default=True)
@@ -89,10 +89,11 @@ class Price(models.Model):
     def _validate_dates_insert(self):
         """Checks if end date is before start date"""
         for record in self:
-            if record.date_ends < record.date_starts:
-                raise ValidationError(
-                    "Ending Date cannot be before Beginning Date. Please use correct time intervals"
-                )
+            if record.date_ends and record.date_starts:
+                if record.date_ends < record.date_starts:
+                    raise ValidationError(
+                        "Ending Date cannot be before Beginning Date. Check it."
+                    )
 
 
 class Stock(models.Model):
@@ -132,12 +133,16 @@ class Product(models.Model):
 
     name = fields.Char('Name', required=True)
     description = fields.Text('Description')
-    price_ids = fields.One2many(
-        'shopping_mall.price', 'product_id', string='Prices')
     stock_id = fields.Many2one(
         'shopping_mall.stock', string='Stock')
+    stock_amount = fields.Integer(
+        string="Total Stock", related='stock_id.sum_of_lots', store=True)
     lot_ids = fields.One2many(
         'shopping_mall.lot', 'product_id', string='Lot')
+    price_ids = fields.One2many(
+        'shopping_mall.price', 'product_id', string='Prices')
+    active_price = fields.Float(
+        String="Active Price", compute="_compute_active_price", store=True)
     cart_products_ids = fields.One2many(
         'shopping_mall.cart_product', 'product_id', string='Cart Product')
 
@@ -150,6 +155,12 @@ class Product(models.Model):
                 raise ValidationError(
                     f"The name '{record.name}' is already in use. Please choose another name."
                 )
+
+    @api.depends('price_ids.active', 'price_ids.price')
+    def _compute_active_price(self):
+        for product in self:
+            active_prices = product.price_ids.filtered(lambda p: p.active)
+            product.active_price = active_prices[0].price if active_prices else 0.0
 
 
 class CartProducts(models.Model):

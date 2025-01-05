@@ -25,11 +25,8 @@
             <tree string="Products" default_order="price_ids asc">
                 <field name="name" />
                 <field name="description" />
-                <field name="price_ids" />
-                <field name="stock_id" />
-                <field name="lot_ids" />
-                <field name="cart_products_ids" />
-
+                <field name="active_price" />
+                <field name="stock_amount" />
             </tree>
         </field>
     </record>
