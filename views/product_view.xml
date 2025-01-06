@@ -11,6 +11,7 @@
                     <group>
                         <field name="name" />
                         <field name="description" />
+                        <field name="tax" />
                     </group>
                 </sheet>
             </form>
@@ -27,6 +28,7 @@
                 <field name="description" />
                 <field name="active_price" />
                 <field name="stock_amount" />
+                <field name="tax" />
             </tree>
         </field>
     </record>

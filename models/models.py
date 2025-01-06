@@ -146,6 +146,8 @@ class Product(models.Model):
         String="Active Price", compute="_compute_active_price", store=True)
     cart_products_ids = fields.One2many(
         'shopping_mall.cart_product', 'product_id', string='Cart Product')
+    tax = fields.Selection(
+        [('0', '0%'), ('5', '5%'), ('10', '10%'), ('21', '21%')], string='IVA', default=0)
 
     @api.constrains('name')
     def _check_unique_name(self):
@@ -177,19 +179,38 @@ class CartProducts(models.Model):
 
     cart_id = fields.Many2one('shopping_mall.cart', string='Cart')
     product_id = fields.Many2one('shopping_mall.product', string='Product')
-    quantity = fields.Integer('quantity')
+    quantity = fields.Integer('Quantity')
     base_price = fields.Float('Unitary Price', compute='_compute_base_price')
-    line_amount = fields.Float('Amount', compute="_compute_line_amount")
+    line_amount = fields.Float('Line Amount', compute="_compute_line_amount")
+    tax_percent = fields.Float(
+        'Tax Percent', compute='_compute_tax_percent', store=True)
 
-    @api.depends('quantity', 'base_price')
+    @api.depends('quantity', 'base_price', 'tax_percent')
     def _compute_line_amount(self):
+        """Calculates the total amount with taxes included"""
         for record in self:
-            record.line_amount = record.quantity * record.base_price
+            base_amount = record.calculate_base_amount()
+            tax_amount = record.calculate_taxes()
+            record.line_amount = base_amount + tax_amount
 
     @api.depends('product_id.active_price')
     def _compute_base_price(self):
         for record in self:
             record.base_price = record.product_id.active_price
+
+    @api.depends('product_id.tax')
+    def _compute_tax_percent(self):
+        for record in self:
+            record.tax_percent = record.product_id.tax
+
+    def calculate_base_amount(self):
+        """Calculates base amount, without taxes"""
+        return self.quantity * self.base_price
+
+    def calculate_taxes(self):
+        """Calculates tax amount)"""
+        base_amount = self.calculate_base_amount()
+        return base_amount * (self.tax_percent / 100)
 
 
 class Cart(models.Model):
@@ -200,15 +221,44 @@ class Cart(models.Model):
     customer_id = fields.Many2one('shopping_mall.customer', string='Customer')
     cart_products_ids = fields.One2many(
         'shopping_mall.cart_product', 'cart_id', string='Cart Products')
-    amount = fields.Float('Amount')
-    discounts = fields.Float('Discounts')
-    total_amount = fields.Float('Total Amount')
-    taxes = fields.Float('Taxes')
+    amount = fields.Float('Amount', compute='_compute_amount', store=True)
+
+    discounts = fields.Integer('Discount', default=0)
+
+    discounts_amount = fields.Float(
+        'Discounts', compute='_compute_discounts_amount', store=True)
+    taxes = fields.Float('Taxes', default=0,
+                         compute='_compute_taxes', store=True)
+    total_amount = fields.Float(
+        'Total Amount', compute='_compute_total_amount', store=True)
+
     creation_timestamp = fields.Datetime(
         'Creation Timestamp', default=lambda self: fields.Datetime.now())
 
+    @api.depends('cart_products_ids.line_amount')
+    def _compute_amount(self):
+        for record in self:
+            record.amount = sum(
+                cart_product.line_amount for cart_product in record.cart_products_ids)
 
-class Customer(models.Model):
+    @api.depends('amount', 'taxes', 'discounts')
+    def _compute_total_amount(self):
+        for record in self:
+            record.total_amount = record.amount + record.taxes - record.discounts_amount
+
+    @api.depends('cart_products_ids.line_amount')
+    def _compute_taxes(self):
+        for record in self:
+            record.taxes = sum(cart_product.calculate_taxes()
+                               for cart_product in record.cart_products_ids)
+
+    @ api.depends('cart_products_ids.line_amount', 'discounts')
+    def _compute_discounts_amount(self):
+        for record in self:
+            record.discounts_amount = (record.amount * record.discounts) / 100
+
+
+class Customer(models .Model):
     """Customer entity with general data"""
     _name = 'shopping_mall.customer'
     _description = 'Customer'
@@ -238,7 +288,7 @@ class Customer(models.Model):
             else:
                 return 'No country associated'
 
-    @api.depends('birth_date')
+    @ api.depends('birth_date')
     def _compute_is_adult(self):
         """Verifies if the customer is an adult (18 years or more)"""
         for customer in self:
@@ -249,22 +299,21 @@ class Customer(models.Model):
             else:
                 customer.is_adult = False
 
-    @staticmethod
-    def calculate_age(birth_date, today_date):
+    def calculate_age(self, birth_date, today_date):
         """Calculates age based on a birthdate and the current date"""
-        if not birth_date:
+        if not birth_date or not isinstance(birth_date, datetime):
             return 0
         age = today_date.year - birth_date.year
         if (today_date.month, today_date.day) < (birth_date.month, birth_date.day):
             age -= 1
         return age
 
-    @api.constrains('is_adult', 'guardian_external_uid')
+    @ api.constrains('is_adult', 'guardian_external_uid')
     def _check_guardian_external_uid(self):
         """Checks if a guardian's external UID is provided for a minor customer"""
-        for customer in self:
-            if not customer.is_adult and not customer.guardian_external_uid:
+        for record in self:
+            if record.is_adult is False and not record.guardian_external_uid:
                 raise ValidationError(
-                    f"Customer {customer.name} {customer.surname} is a minor."
+                    f"Customer {record.name} {record.surname} is a minor."
                     f"You must provide the NIF of their guardian"
                 )
