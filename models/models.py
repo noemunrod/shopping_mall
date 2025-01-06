@@ -332,7 +332,7 @@ class Customer(models .Model):
         if not isinstance(birth_date, date) or not isinstance(today_date, date):
             return 0
         age = today_date.year - birth_date.year
-        if (today_date.month, today_date.date) < (birth_date.month, birth_date.day):
+        if (today_date.month, today_date.day) < (birth_date.month, birth_date.day):
             age -= 1
         return age
 
