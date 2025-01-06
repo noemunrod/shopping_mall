@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Odoo module for Shopping shopping activities"""
-from datetime import datetime
+from datetime import date
 from odoo import api, fields, models  # type: ignore
 from odoo.exceptions import ValidationError  # type: ignore
 
@@ -234,6 +234,9 @@ class Cart(models.Model):
 
     creation_timestamp = fields.Datetime(
         'Creation Timestamp', default=lambda self: fields.Datetime.now())
+    payment_method = fields.Selection([
+        ('credit_card', 'Credit Card'), ('credit_line', 'Credit Line')
+    ], string='Payment Method')
 
     @api.depends('cart_products_ids.line_amount')
     def _compute_amount(self):
@@ -252,10 +255,29 @@ class Cart(models.Model):
             record.taxes = sum(cart_product.calculate_taxes()
                                for cart_product in record.cart_products_ids)
 
-    @ api.depends('cart_products_ids.line_amount', 'discounts')
+    @api.depends('cart_products_ids.line_amount', 'discounts')
     def _compute_discounts_amount(self):
         for record in self:
             record.discounts_amount = (record.amount * record.discounts) / 100
+
+    @api.constrains('total_amount', 'payment_method', 'customer_id')
+    def _customer_pay_check(self):
+        for record in self:
+            method_used = record.payment_method
+            customer_available_balance = record.customer_id.available_balance
+            if method_used == 'credit_line' and customer_available_balance < record.total_amount:
+                raise ValidationError(
+                    "No available account balance. Please use another payment method.")
+
+    def create(self, vals):
+        """Update customer.money_spent when creating a validated cart"""
+        cart = super(Cart, self).write(vals)
+
+        for record in self:
+            if record.customer_id:
+                record.customer_id.money_spent += record.total_amount
+
+        return cart
 
 
 class Customer(models .Model):
@@ -273,8 +295,10 @@ class Customer(models .Model):
     post_code = fields.Char('Postal Code')
     country_id = fields.Many2one('res.country', string='Country')
     guardian_external_uid = fields.Char('Guardian External UID')
-    credit_limit_amount = fields.Integer('Credit limit amount')
+    credit_limit_amount = fields.Integer('Credit limit amount', default=2000)
     money_spent = fields.Float('Money Spent')
+    available_balance = fields.Float(
+        'Available Balance', compute='_compute_available_balance', store=True)
     carts_ids = fields.One2many(
         'shopping_mall.cart', 'customer_id', string='Carts')
     is_adult = fields.Boolean(
@@ -292,19 +316,23 @@ class Customer(models .Model):
     def _compute_is_adult(self):
         """Verifies if the customer is an adult (18 years or more)"""
         for customer in self:
-            today = datetime.today()
-            age = self.calculate_age(customer.birth_date, today)
-            if age >= 18:
-                customer.is_adult = True
+            if customer.birth_date:
+                today = fields.Date.today()
+                age = self.calculate_age(customer.birth_date, today)
+                customer.is_adult = age >= 18
             else:
                 customer.is_adult = False
 
     def calculate_age(self, birth_date, today_date):
         """Calculates age based on a birthdate and the current date"""
-        if not birth_date or not isinstance(birth_date, datetime):
+        if not birth_date:
+            return 0
+        if isinstance(birth_date, str):
+            birth_date = fields.Date.from_string(birth_date)
+        if not isinstance(birth_date, date) or not isinstance(today_date, date):
             return 0
         age = today_date.year - birth_date.year
-        if (today_date.month, today_date.day) < (birth_date.month, birth_date.day):
+        if (today_date.month, today_date.date) < (birth_date.month, birth_date.day):
             age -= 1
         return age
 
@@ -317,3 +345,8 @@ class Customer(models .Model):
                     f"Customer {record.name} {record.surname} is a minor."
                     f"You must provide the NIF of their guardian"
                 )
+
+    @api.depends('money_spent', 'credit_limit_amount')
+    def _compute_available_balance(self):
+        for record in self:
+            record.available_balance = record.credit_limit_amount - record.money_spent
