@@ -42,7 +42,6 @@
                 <field name="guardian_external_uid" />
                 <field name="credit_limit_amount" />
                 <field name="money_spent" />
-                <field name="carts_ids" />
                 <field name="is_adult" />
             </tree>
         </field>

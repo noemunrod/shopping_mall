@@ -178,8 +178,18 @@ class CartProducts(models.Model):
     cart_id = fields.Many2one('shopping_mall.cart', string='Cart')
     product_id = fields.Many2one('shopping_mall.product', string='Product')
     quantity = fields.Integer('quantity')
-    base_price = fields.Float('Unitary Price')
-    amount = fields.Float('Amount')
+    base_price = fields.Float('Unitary Price', compute='_compute_base_price')
+    line_amount = fields.Float('Amount', compute="_compute_line_amount")
+
+    @api.depends('quantity', 'base_price')
+    def _compute_line_amount(self):
+        for record in self:
+            record.line_amount = record.quantity * record.base_price
+
+    @api.depends('product_id.active_price')
+    def _compute_base_price(self):
+        for record in self:
+            record.base_price = record.product_id.active_price
 
 
 class Cart(models.Model):

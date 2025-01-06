@@ -19,7 +19,7 @@
                                 <field name="product_id" />
                                 <field name="base_price" />
                                 <field name="quantity" />
-                                <field name="amount" readonly='1' />
+                                <field name="line_amount" readonly='1' />
                             </tree>
                         </field>
                     </group>
