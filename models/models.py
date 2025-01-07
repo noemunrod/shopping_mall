@@ -185,6 +185,12 @@ class CartProducts(models.Model):
     tax_percent = fields.Float(
         'Tax Percent', compute='_compute_tax_percent', store=True)
 
+    @api.constrains('quantity')
+    def _check_quantity(self):
+        for record in self:
+            if record.quantity < 1:
+                raise ValidationError("Quantity must be at least 1")
+
     @api.depends('quantity', 'base_price', 'tax_percent')
     def _compute_line_amount(self):
         """Calculates the total amount with taxes included"""
@@ -268,7 +274,7 @@ class Cart(models.Model):
         if cart.payment_method == 'credit_line' and have_balance:
             raise ValidationError(
                 "No available account balance. Please use another payment method")
-        if cart.customer_id and cart.payment_method == 'credit_line':
+        if cart.customer_id and have_balance:
             cart.customer_id.money_spent += cart.total_amount
         return cart
 

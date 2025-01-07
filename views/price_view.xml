@@ -9,10 +9,10 @@
             <form string="Prices">
                 <sheet>
                     <group>
-                        <field name="product_id" />
-                        <field name="price" />
-                        <field name="date_starts" />
-                        <field name="date_ends" />
+                        <field name="product_id" required="True" />
+                        <field name="price" required="True" />
+                        <field name="date_starts" required="True" />
+                        <field name="date_ends" required="True" />
 
                     </group>
                 </sheet>

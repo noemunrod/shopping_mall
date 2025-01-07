@@ -9,9 +9,10 @@
             <form string="Customer">
                 <sheet>
                     <group>
-                        <field name="name" />
+                        <field name="external_uid" required="True" />
+                        <field name="name" required="True" />
                         <field name="surname" />
-                        <field name="birth_date" />
+                        <field name="birth_date" required="True" />
                         <field name="email" />
                         <field name="dir_line_1" />
                         <field name="dir_line_2" />

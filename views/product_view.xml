@@ -9,9 +9,9 @@
             <form string="">
                 <sheet>
                     <group>
-                        <field name="name" />
+                        <field name="name" required="True" />
                         <field name="description" />
-                        <field name="tax" />
+                        <field name="tax" required="True" />
                     </group>
                 </sheet>
             </form>

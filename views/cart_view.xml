@@ -16,9 +16,9 @@
                     </group>
                     <group>
                         <!-- Cart Product Form Section -->
-                        <field name="cart_products_ids">
+                        <field name="cart_products_ids" required="True">
                             <tree editable="bottom">
-                                <field name="product_id" />
+                                <field name="product_id" required="True" />
                                 <field name="base_price" readonly='1' />
                                 <field name="quantity" required="True" />
                                 <field name="line_amount" readonly='1' />
