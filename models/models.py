@@ -260,23 +260,16 @@ class Cart(models.Model):
         for record in self:
             record.discounts_amount = (record.amount * record.discounts) / 100
 
-    @api.constrains('total_amount', 'payment_method', 'customer_id')
-    def _customer_pay_check(self):
-        for record in self:
-            method_used = record.payment_method
-            customer_available_balance = record.customer_id.available_balance
-            if method_used == 'credit_line' and customer_available_balance < record.total_amount:
-                raise ValidationError(
-                    "No available account balance. Please use another payment method.")
-
+    @api.model
     def create(self, vals):
         """Update customer.money_spent when creating a validated cart"""
-        cart = super(Cart, self).write(vals)
-
-        for record in self:
-            if record.customer_id:
-                record.customer_id.money_spent += record.total_amount
-
+        cart = super(Cart, self).create(vals)
+        have_balance = cart.customer_id.available_balance < self.total_amount
+        if cart.payment_method == 'credit_line' and have_balance:
+            raise ValidationError(
+                "No available account balance. Please use another payment method")
+        if cart.customer_id and cart.payment_method == 'credit_line':
+            cart.customer_id.money_spent += cart.total_amount
         return cart
 
 

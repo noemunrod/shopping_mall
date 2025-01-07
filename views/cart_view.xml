@@ -9,26 +9,27 @@
             <form string="Cart">
                 <sheet>
                     <group>
-                        <field name="customer_id" />
+                        <field name="customer_id" required="True" />
                         <field name="creation_timestamp" readonly='1' />
                         <field name="discounts" />
+                        <field name="payment_method" required="True" />
                     </group>
                     <group>
                         <!-- Cart Product Form Section -->
                         <field name="cart_products_ids">
                             <tree editable="bottom">
                                 <field name="product_id" />
-                                <field name="base_price" />
-                                <field name="quantity" />
+                                <field name="base_price" readonly='1' />
+                                <field name="quantity" required="True" />
                                 <field name="line_amount" readonly='1' />
                             </tree>
                         </field>
                     </group>
                     <group>
                         <field name="amount" readonly='1' />
+                        <field name="taxes" readonly='1' />
                         <field name="discounts_amount" readonly='1' />
                         <field name="total_amount" readonly='1' />
-                        <field name="taxes" readonly='1' />
                     </group>
                 </sheet>
             </form>
