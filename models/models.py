@@ -113,6 +113,34 @@ class Stock(models.Model):
         for record in self:
             record.sum_of_lots = sum(lot.amount for lot in record.lots_ids)
 
+    def substrack_stock(self, amount):
+        """Substract cart's line quantity from stock lots"""
+        for record in self:
+            remaining_amount = amount
+            for lot in record.lots_ids:
+                if remaining_amount < 0:
+                    break
+
+                if lot.amount >= remaining_amount:
+                    lot.amount -= remaining_amount
+                    remaining_amount = 0
+
+                else:
+                    remaining_amount -= lot.amount
+                    lot.amount = 0
+
+    def check_available_stock(self, amount):
+        """Checks if exist enough amount for buy in a product"""
+        for record in self:
+            available_stock = 0
+            for lot in record.lots_ids:
+                available_stock += lot.amount
+
+            if available_stock < amount:
+                raise ValidationError(
+                    f"Not enough stock for  '{record.product_id.name}'")
+        return True
+
 
 class Lot(models.Model):
     """Lot entity with lot number, amount of its referenced product, and expiration date"""
@@ -179,7 +207,7 @@ class CartProducts(models.Model):
 
     cart_id = fields.Many2one('shopping_mall.cart', string='Cart')
     product_id = fields.Many2one('shopping_mall.product', string='Product')
-    quantity = fields.Integer('Quantity')
+    quantity = fields.Integer('Quantity', default=1)
     base_price = fields.Float('Unitary Price', compute='_compute_base_price')
     line_amount = fields.Float('Line Amount', compute="_compute_line_amount")
     tax_percent = fields.Float(
@@ -217,6 +245,11 @@ class CartProducts(models.Model):
         """Calculates tax amount)"""
         base_amount = self.calculate_base_amount()
         return base_amount * (self.tax_percent / 100)
+
+    def substract_purchased_stock(self):
+        """Calls substracts function in every cart_line"""
+        for record in self:
+            record.substract_stock(record.quantity)
 
 
 class Cart(models.Model):
@@ -266,16 +299,39 @@ class Cart(models.Model):
         for record in self:
             record.discounts_amount = (record.amount * record.discounts) / 100
 
+    def check_customer_balance(self):
+        """Validates if the customer has enough account balance"""
+        have_balance = self.customer_id.available_balance < self.total_amount
+        if self.payment_method == 'credit_line' and not have_balance:
+            raise ValidationError(
+                "No available account balance. Please use another payment method")
+        return True
+
+    def update_customer_balance(self):
+        """Update the customer money_spent reducing available balance"""
+        have_balance = self.customer_id.available_balance < self.total_amount
+        if self.customer_id and have_balance:
+            self.customer_id.money_spent += self.total_amount
+
+    def update_products_stock(self):
+        """Substract purchased products from stock's lots"""
+        for cart_line in self.cart_products_ids:
+            cart_line.substract_purchased_stock()
+
+    def check_stock_available(self):
+        """Checks if is enought stock available for every cart line"""
+        for record in self:
+            for cart_line in record.cart_products_ids:
+                cart_line.product_id.stock_id.check_available_stock(
+                    cart_line.quantity)
+
     @api.model
     def create(self, vals):
         """Update customer.money_spent when creating a validated cart"""
         cart = super(Cart, self).create(vals)
-        have_balance = cart.customer_id.available_balance < self.total_amount
-        if cart.payment_method == 'credit_line' and have_balance:
-            raise ValidationError(
-                "No available account balance. Please use another payment method")
-        if cart.customer_id and have_balance:
-            cart.customer_id.money_spent += cart.total_amount
+        if cart.check_customer_balance() and cart.check_stock_available():
+            cart.update_products_stock()
+        cart.update_customer_balance()
         return cart
 
 

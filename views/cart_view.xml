@@ -21,6 +21,7 @@
                                 <field name="product_id" required="True" />
                                 <field name="base_price" readonly='1' />
                                 <field name="quantity" required="True" />
+                                <field name="tax_percent" readonly='1' />
                                 <field name="line_amount" readonly='1' />
                             </tree>
                         </field>
