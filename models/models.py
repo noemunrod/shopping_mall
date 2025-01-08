@@ -82,7 +82,8 @@ class Price(models.Model):
                 ])
                 if existing_active_price:
                     raise ValidationError(
-                        f"There is already an active price for '{record.product_id.name}'"
+                        f"There is already an active price for {
+                            record.product_id.name}"
                     )
 
     @api.constrains('date_ends', 'date_starts', 'product_id')
@@ -137,8 +138,9 @@ class Stock(models.Model):
                 available_stock += lot.amount
 
             if available_stock < amount:
-                raise ValidationError(
-                    f"Not enough stock for  '{record.product_id.name}'")
+                error_message = f"Not enough stock for {
+                    record.product_id.name}"
+                raise ValidationError(error_message)
         return True
 
 
@@ -183,8 +185,10 @@ class Product(models.Model):
             existing_products = self.search(
                 [('name', '=', record.name), ('id', "!=", record.id)])
             if existing_products:
+                error_message = f"The name {
+                    record.name}  is already in use. Choose another name"
                 raise ValidationError(
-                    f"The name '{record.name}' is already in use. Please choose another name."
+                    error_message
                 )
 
     @api.depends('stock_id.sum_of_lots')
@@ -299,6 +303,7 @@ class Cart(models.Model):
         for record in self:
             record.discounts_amount = (record.amount * record.discounts) / 100
 
+    @api.constrains('total_amount')
     def check_customer_balance(self):
         """Validates if the customer has enough account balance"""
         have_balance = self.customer_id.available_balance < self.total_amount
@@ -306,6 +311,14 @@ class Cart(models.Model):
             raise ValidationError(
                 "No available account balance. Please use another payment method")
         return True
+
+    @api.constrains('cart_products_ids')
+    def check_stock_available(self):
+        """Checks if is enought stock available for every cart line"""
+        for record in self:
+            for cart_line in record.cart_products_ids:
+                cart_line.product_id.stock_id.check_available_stock(
+                    cart_line.quantity)
 
     def update_customer_balance(self):
         """Update the customer money_spent reducing available balance"""
@@ -317,13 +330,6 @@ class Cart(models.Model):
         """Substract purchased products from stock's lots"""
         for cart_line in self.cart_products_ids:
             cart_line.substract_purchased_stock()
-
-    def check_stock_available(self):
-        """Checks if is enought stock available for every cart line"""
-        for record in self:
-            for cart_line in record.cart_products_ids:
-                cart_line.product_id.stock_id.check_available_stock(
-                    cart_line.quantity)
 
     @api.model
     def create(self, vals):
@@ -396,9 +402,10 @@ class Customer(models .Model):
         """Checks if a guardian's external UID is provided for a minor customer"""
         for record in self:
             if record.is_adult is False and not record.guardian_external_uid:
+                error_message_main = "Customer {record.name, record.surname} is a minor."
+                error_message_sub = "You must provide the NIF of their guardian"
                 raise ValidationError(
-                    f"Customer {record.name} {record.surname} is a minor."
-                    f"You must provide the NIF of their guardian"
+                    {error_message_main, error_message_sub}
                 )
 
     @api.depends('money_spent', 'credit_limit_amount')
