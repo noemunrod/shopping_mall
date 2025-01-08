@@ -113,7 +113,7 @@ class Stock(models.Model):
         for record in self:
             record.sum_of_lots = sum(lot.amount for lot in record.lots_ids)
 
-    def substrack_stock(self, amount):
+    def substract_stock(self, amount):
         """Substract cart's line quantity from stock lots"""
         for record in self:
             remaining_amount = amount
