@@ -82,8 +82,8 @@ class Price(models.Model):
                 ])
                 if existing_active_price:
                     raise ValidationError(
-                        f"There is already an active price for {
-                            record.product_id.name}"
+                        "There is already an active price for " +
+                        '{record.product_id.name}'
                     )
 
     @api.constrains('date_ends', 'date_starts', 'product_id')
@@ -138,9 +138,8 @@ class Stock(models.Model):
                 available_stock += lot.amount
 
             if available_stock < amount:
-                error_message = f"Not enough stock for {
-                    record.product_id.name}"
-                raise ValidationError(error_message)
+                raise ValidationError(
+                    "Not enough stock for" + '{record.product_id.name}')
         return True
 
 
@@ -164,8 +163,8 @@ class Product(models.Model):
 
     name = fields.Char('Name', required=True)
     description = fields.Text('Description')
-    stock_id = fields.Many2one(
-        'shopping_mall.stock', string='Stock')
+    stock_id = fields.One2many(
+        'shopping_mall.stock', 'product_id', string='Stock')
     stock_amount = fields.Integer(
         string="Total Stock", compute="_compute_stock_amount", store=True)
     lot_ids = fields.One2many(
@@ -185,13 +184,13 @@ class Product(models.Model):
             existing_products = self.search(
                 [('name', '=', record.name), ('id', "!=", record.id)])
             if existing_products:
-                error_message = f"The name {
-                    record.name}  is already in use. Choose another name"
                 raise ValidationError(
-                    error_message
+                    "The name " + '{record.name}' +
+                    " is already in use. Choose another name"
+
                 )
 
-    @api.depends('stock_id.sum_of_lots')
+    @api.depends('stock_id.sum_of_lots', 'stock_id.lots_ids')
     def _compute_stock_amount(self):
         for product in self:
             total_amount = product.stock_id.sum_of_lots
