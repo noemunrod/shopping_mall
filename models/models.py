@@ -109,7 +109,7 @@ class Stock(models.Model):
     sum_of_lots = fields.Integer(
         'Total Stock', compute='_compute_sum_of_lots', store=True)
 
-    @api.depends('lots_ids')
+    @api.depends('lots_ids', 'lots_ids.amount')
     def _compute_sum_of_lots(self):
         for record in self:
             record.sum_of_lots = sum(lot.amount for lot in record.lots_ids)
@@ -252,7 +252,7 @@ class CartProducts(models.Model):
     def substract_purchased_stock(self):
         """Calls substracts function in every cart_line"""
         for record in self:
-            record.substract_stock(record.quantity)
+            record.product_id.stock_id.substract_stock(record.quantity)
 
 
 class Cart(models.Model):
@@ -305,7 +305,7 @@ class Cart(models.Model):
     @api.constrains('total_amount')
     def check_customer_balance(self):
         """Validates if the customer has enough account balance"""
-        have_balance = self.customer_id.available_balance < self.total_amount
+        have_balance = self.customer_id.available_balance >= self.total_amount
         if self.payment_method == 'credit_line' and not have_balance:
             raise ValidationError(
                 "No available account balance. Please use another payment method")
@@ -321,9 +321,8 @@ class Cart(models.Model):
 
     def update_customer_balance(self):
         """Update the customer money_spent reducing available balance"""
-        have_balance = self.customer_id.available_balance < self.total_amount
-        if self.customer_id and have_balance:
-            self.customer_id.money_spent += self.total_amount
+        for record in self:
+            record.customer_id.money_spent += record.total_amount
 
     def update_products_stock(self):
         """Substract purchased products from stock's lots"""
@@ -334,8 +333,7 @@ class Cart(models.Model):
     def create(self, vals):
         """Update customer.money_spent when creating a validated cart"""
         cart = super(Cart, self).create(vals)
-        if cart.check_customer_balance() and cart.check_stock_available():
-            cart.update_products_stock()
+        cart.update_products_stock()
         cart.update_customer_balance()
         return cart
 
