@@ -321,8 +321,7 @@ class Cart(models.Model):
 
     def update_customer_balance(self):
         """Update the customer money_spent reducing available balance"""
-        for record in self:
-            record.customer_id.money_spent += record.total_amount
+        self.customer_id.money_spent += self.total_amount
 
     def update_products_stock(self):
         """Substract purchased products from stock's lots"""
@@ -334,7 +333,8 @@ class Cart(models.Model):
         """Update customer.money_spent when creating a validated cart"""
         cart = super(Cart, self).create(vals)
         cart.update_products_stock()
-        cart.update_customer_balance()
+        if cart.payment_method == "credit_line":
+            cart.update_customer_balance()
         return cart
 
 
