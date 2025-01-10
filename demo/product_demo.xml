@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="demo_product_1" model="shopping_mall.product">
+            <field name="name">Laptop Pro 15</field>
+            <field name="description">High-performance laptop with 15-inch display.</field>
+            <field name="tax">10</field>
+        </record>
+        <record id="demo_product_2" model="shopping_mall.product">
+            <field name="name">Wireless Headphones</field>
+            <field name="description">Noise-cancelling over-ear headphones.</field>
+            <field name="tax">21</field>
+        </record>
+        <record id="demo_product_3" model="shopping_mall.product">
+            <field name="name">Smartphone XR</field>
+            <field name="description">Latest generation smartphone with 5G.</field>
+            <field name="tax">10</field>
+        </record>
+        <record id="demo_product_4" model="shopping_mall.product">
+            <field name="name">4K Smart TV</field>
+            <field name="description">Ultra HD television with streaming capabilities.</field>
+            <field name="tax">21</field>
+        </record>
+        <record id="demo_product_5" model="shopping_mall.product">
+            <field name="name">Gaming Console</field>
+            <field name="description">Next-gen console with 4K gaming support.</field>
+            <field name="tax">10</field>
+        </record>
+        <record id="demo_product_6" model="shopping_mall.product">
+            <field name="name">Fitness Tracker</field>
+            <field name="description">Wearable device for tracking health metrics.</field>
+            <field name="tax">5</field>
+        </record>
+        <record id="demo_product_7" model="shopping_mall.product">
+            <field name="name">Bluetooth Speaker</field>
+            <field name="description">Portable speaker with powerful sound.</field>
+            <field name="tax">10</field>
+        </record>
+        <record id="demo_product_8" model="shopping_mall.product">
+            <field name="name">E-Reader</field>
+            <field name="description">Lightweight e-reader with adjustable backlight.</field>
+            <field name="tax">5</field>
+        </record>
+        <record id="demo_product_9" model="shopping_mall.product">
+            <field name="name">Smartwatch</field>
+            <field name="description">Advanced smartwatch with health monitoring features.</field>
+            <field name="tax">21</field>
+        </record>
+        <record id="demo_product_10" model="shopping_mall.product">
+            <field name="name">Drone</field>
+            <field name="description">Compact drone with 4K camera and GPS.</field>
+            <field name="tax">10</field>
+        </record>
+    </data>
+</odoo>

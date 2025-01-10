@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Stock for Laptop Pro 15 -->
+        <record id="stock_laptop_pro_15" model="shopping_mall.stock">
+            <field name="product_id" ref="demo_product_1" />
+            <field name="lots_ids"
+                eval="[(0, 0, {'lot_number': 'LOT001', 'amount': 50, 'expiration': '2025-12-31'})]" />
+            <field name="lots_ids"
+                eval="[(0, 0, {'lot_number': 'LOT002', 'amount': 30, 'expiration': '2026-06-30'})]" />
+        </record>
+
+        <!-- Stock for Wireless Headphones -->
+        <record id="stock_wireless_headphones" model="shopping_mall.stock">
+            <field name="product_id" ref="demo_product_2" />
+            <field name="lots_ids"
+                eval="[(0, 0, {'lot_number': 'LOT003', 'amount': 100, 'expiration': '2025-11-15'})]" />
+            <field name="lots_ids"
+                eval="[(0, 0, {'lot_number': 'LOT004', 'amount': 50, 'expiration': '2026-03-01'})]" />
+        </record>
+
+        <!-- Stock for Smartphone XR -->
+        <record id="stock_smartphone_xr" model="shopping_mall.stock">
+            <field name="product_id" ref="demo_product_3" />
+            <field name="lots_ids"
+                eval="[(0, 0, {'lot_number': 'LOT005', 'amount': 20, 'expiration': '2026-01-15'})]" />
+        </record>
+
+        <!-- Stock for 4K Smart TV -->
+        <record id="stock_4k_smart_tv" model="shopping_mall.stock">
+            <field name="product_id" ref="demo_product_4" />
+            <field name="lots_ids"
+                eval="[(0, 0, {'lot_number': 'LOT006', 'amount': 10, 'expiration': '2027-09-30'})]" />
+        </record>
+
+        <!-- Stock for Gaming Console -->
+        <record id="stock_gaming_console" model="shopping_mall.stock">
+            <field name="product_id" ref="demo_product_5" />
+            <field name="lots_ids"
+                eval="[(0, 0, {'lot_number': 'LOT007', 'amount': 15, 'expiration': '2026-12-31'})]" />
+        </record>
+
+        <!-- Stock for Fitness Tracker -->
+        <record id="stock_fitness_tracker" model="shopping_mall.stock">
+            <field name="product_id" ref="demo_product_6" />
+            <field name="lots_ids"
+                eval="[(0, 0, {'lot_number': 'LOT008', 'amount': 40, 'expiration': '2025-08-15'})]" />
+        </record>
+
+        <!-- Stock for Bluetooth Speaker -->
+        <record id="stock_bluetooth_speaker" model="shopping_mall.stock">
+            <field name="product_id" ref="demo_product_7" />
+            <field name="lots_ids"
+                eval="[(0, 0, {'lot_number': 'LOT009', 'amount': 60, 'expiration': '2026-11-30'})]" />
+        </record>
+
+        <!-- Stock for E-Reader -->
+        <record id="stock_e_reader" model="shopping_mall.stock">
+            <field name="product_id" ref="demo_product_8" />
+            <field name="lots_ids"
+                eval="[(0, 0, {'lot_number': 'LOT010', 'amount': 25, 'expiration': '2026-04-15'})]" />
+        </record>
+
+        <!-- Stock for Smartwatch -->
+        <record id="stock_smartwatch" model="shopping_mall.stock">
+            <field name="product_id" ref="demo_product_9" />
+            <field name="lots_ids"
+                eval="[(0, 0, {'lot_number': 'LOT011', 'amount': 35, 'expiration': '2025-10-01'})]" />
+        </record>
+
+        <!-- Stock for Drone -->
+        <record id="stock_drone" model="shopping_mall.stock">
+            <field name="product_id" ref="demo_product_10" />
+            <field name="lots_ids"
+                eval="[(0, 0, {'lot_number': 'LOT012', 'amount': 12, 'expiration': '2027-03-30'})]" />
+        </record>
+    </data>
+</odoo>

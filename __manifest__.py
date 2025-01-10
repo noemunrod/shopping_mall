@@ -31,6 +31,13 @@
         'security/ir.model.access.csv',
 
     ],
+    'demo': [
+        'demo/product_demo.xml',
+        'demo/price_demo.xml',
+        'demo/stock_demo.xml',
+        'demo/customer_demo.xml',
+        'demo/cart_demo.xml',
+    ],
     'application': True,
     'installable': True,
 

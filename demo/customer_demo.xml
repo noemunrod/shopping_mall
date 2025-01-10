@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Demo Customer 1 -->
+        <record id="demo_customer_1" model="shopping_mall.customer">
+            <field name="external_uid">DEMO001</field>
+            <field name="name">Alice</field>
+            <field name="surname">Johnson</field>
+            <field name="birth_date">1990-01-15</field>
+            <field name="email">alice.johnson@example.com</field>
+            <field name="dir_line_1">123 Elm Street</field>
+            <field name="dir_line_2">Apt 5A</field>
+            <field name="post_code">12345</field>
+            <field name="country_id">3</field>
+            <field name="guardian_external_uid"></field>
+        </record>
+
+        <!-- Demo Customer 2 -->
+        <record id="demo_customer_2" model="shopping_mall.customer">
+            <field name="external_uid">DEMO002</field>
+            <field name="name">Bob</field>
+            <field name="surname">Smith</field>
+            <field name="birth_date">2005-06-12</field>
+            <field name="email">bob.smith@example.com</field>
+            <field name="dir_line_1">456 Oak Avenue</field>
+            <field name="dir_line_2"></field>
+            <field name="post_code">23456</field>
+            <field name="country_id">3</field>
+            <field name="guardian_external_uid">GUARD001</field>
+        </record>
+
+        <!-- Demo Customer 3 -->
+        <record id="demo_customer_3" model="shopping_mall.customer">
+            <field name="external_uid">DEMO003</field>
+            <field name="name">Clara</field>
+            <field name="surname">Davis</field>
+            <field name="birth_date">1988-07-22</field>
+            <field name="email">clara.davis@example.org</field>
+            <field name="dir_line_1">789 Pine Lane</field>
+            <field name="dir_line_2">Suite 101</field>
+            <field name="post_code">34567</field>
+            <field name="country_id">3</field>
+            <field name="guardian_external_uid"></field>
+        </record>
+
+        <!-- Demo Customer 4 -->
+        <record id="demo_customer_4" model="shopping_mall.customer">
+            <field name="external_uid">DEMO004</field>
+            <field name="name">Daniel</field>
+            <field name="surname">Evans</field>
+            <field name="birth_date">2009-02-14</field>
+            <field name="email">daniel.evans@example.org</field>
+            <field name="dir_line_1">12 Maple Drive</field>
+            <field name="dir_line_2"></field>
+            <field name="post_code">45678</field>
+            <field name="country_id">3</field>
+            <field name="guardian_external_uid">GUARD002</field>
+        </record>
+
+        <!-- Demo Customer 5 -->
+        <record id="demo_customer_5" model="shopping_mall.customer">
+            <field name="external_uid">DEMO005</field>
+            <field name="name">Ella</field>
+            <field name="surname">Garcia</field>
+            <field name="birth_date">1995-10-30</field>
+            <field name="email">ella.garcia@example.com</field>
+            <field name="dir_line_1">567 Cedar Road</field>
+            <field name="dir_line_2">Floor 2</field>
+            <field name="post_code">56789</field>
+            <field name="country_id">3</field>
+            <field name="guardian_external_uid"></field>
+        </record>
+
+        <!-- Demo Customer 6 -->
+        <record id="demo_customer_6" model="shopping_mall.customer">
+            <field name="external_uid">DEMO006</field>
+            <field name="name">Finn</field>
+            <field name="surname">Hill</field>
+            <field name="birth_date">2010-11-09</field>
+            <field name="email">finn.hill@example.co.uk</field>
+            <field name="dir_line_1">98 Birch Street</field>
+            <field name="dir_line_2"></field>
+            <field name="post_code">67890</field>
+            <field name="country_id">3</field>
+            <field name="guardian_external_uid">GUARD003</field>
+        </record>
+
+        <!-- Demo Customer 7 -->
+        <record id="demo_customer_7" model="shopping_mall.customer">
+            <field name="external_uid">DEMO007</field>
+            <field name="name">Grace</field>
+            <field name="surname">Ivy</field>
+            <field name="birth_date">1985-04-03</field>
+            <field name="email">grace.ivy@example.fr</field>
+            <field name="dir_line_1">23 Elm Grove</field>
+            <field name="dir_line_2"></field>
+            <field name="post_code">78901</field>
+            <field name="country_id">3</field>
+            <field name="guardian_external_uid"></field>
+        </record>
+
+        <!-- Demo Customer 8 -->
+        <record id="demo_customer_8" model="shopping_mall.customer">
+            <field name="external_uid">DEMO008</field>
+            <field name="name">Henry</field>
+            <field name="surname">Jones</field>
+            <field name="birth_date">2015-05-28</field>
+            <field name="email">henry.jones@example.au</field>
+            <field name="dir_line_1">47 Oak Terrace</field>
+            <field name="dir_line_2"></field>
+            <field name="post_code">89012</field>
+            <field name="country_id">3</field>
+            <field name="guardian_external_uid">GUARD004</field>
+        </record>
+
+        <!-- Demo Customer 9 -->
+        <record id="demo_customer_9" model="shopping_mall.customer">
+            <field name="external_uid">DEMO009</field>
+            <field name="name">Ivy</field>
+            <field name="surname">Kelly</field>
+            <field name="birth_date">1993-09-19</field>
+            <field name="email">ivy.kelly@example.it</field>
+            <field name="dir_line_1">19 Aspen Street</field>
+            <field name="dir_line_2"></field>
+            <field name="post_code">90123</field>
+            <field name="country_id">3</field>
+            <field name="guardian_external_uid"></field>
+        </record>
+
+        <!-- Demo Customer 10 -->
+        <record id="demo_customer_10" model="shopping_mall.customer">
+            <field name="external_uid">DEMO010</field>
+            <field name="name">Jack</field>
+            <field name="surname">Moore</field>
+            <field name="birth_date">2008-03-07</field>
+            <field name="email">jack.moore@example.de</field>
+            <field name="dir_line_1">36 Willow Way</field>
+            <field name="dir_line_2"></field>
+            <field name="post_code">01234</field>
+            <field name="country_id">3</field>
+            <field name="guardian_external_uid">GUARD005</field>
+        </record>
+    </data>
+</odoo>
